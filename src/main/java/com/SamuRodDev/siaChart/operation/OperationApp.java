@@ -1,5 +1,12 @@
 package com.SamuRodDev.siaChart.operation;
 
-public class OperationApp {
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class OperationApp extends JPanel{
+	public OperationApp() {
+        JLabel label = new JLabel("Contenido de operar");
+        add(label);
+    }
     
 }
