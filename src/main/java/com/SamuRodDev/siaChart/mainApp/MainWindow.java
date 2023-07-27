@@ -30,7 +30,6 @@ import org.apache.http.HttpResponse;
 
 import com.SamuRodDev.siaChart.analysis.fundamentals.FundamentalsAnalysisApp;
 import com.SamuRodDev.siaChart.analysis.technical.TechnicalAnalysisApp;
-import com.SamuRodDev.siaChart.operation.OperationApp;
 
 import javax.swing.JTabbedPane;
 import java.awt.Font;
@@ -115,7 +114,7 @@ public class MainWindow {
 		frmMainApp.getContentPane().add(tbdpnlContent, BorderLayout.CENTER);
 		tbdpnlContent.addTab("Análisis Técnico", technical); // Pestaña de análisis técnico con contenido Analysis
 		tbdpnlContent.addTab("Fundamentales", new FundamentalsAnalysisApp()); // Pestaña de fundamentales con contenido Fundamental
-		tbdpnlContent.addTab("Operar", new OperationApp()); // Pestaña de fundamentales con contenido Fundamental
+	
 		
 	}
 
