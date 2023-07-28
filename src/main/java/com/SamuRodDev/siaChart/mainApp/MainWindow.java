@@ -42,6 +42,7 @@ public class MainWindow {
 	private JTextField txtTicker;
 	private JTabbedPane tbdpnlContent;
 	private JButton btnTicker;
+	String apiKey = "PC2064VAMC8JGNU7";
 
 	/**
 	 * Launch the application.
@@ -77,6 +78,7 @@ public class MainWindow {
 		frmMainApp.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		
 		TechnicalAnalysisApp technical = new TechnicalAnalysisApp();
+		FundamentalsAnalysisApp fundamental = new FundamentalsAnalysisApp();
 		
 		pnlTop = new JPanel();
 		frmMainApp.getContentPane().add(pnlTop, BorderLayout.NORTH);
@@ -99,10 +101,12 @@ public class MainWindow {
             String ticker = txtTicker.getText();
             
             try {
-                double precio = buscarPrecio(ticker);
-                
+                JSONObject overview = getTickerData(ticker, 0);
+                JSONObject income = getTickerData(ticker, 1);
+                JSONObject balance = getTickerData(ticker, 2);
+                fundamental.setFundamentals(overview, income, balance);
                 // Actualizar el precio en las pestañas correspondientes
-                technical.setPrecio(precio);
+                //technical.setPrecio(precio);
             } catch (Exception ex) {
                 System.err.println("Error al obtener el precio para el ticker " + ticker + ": " + ex.getMessage());
             }
@@ -113,19 +117,24 @@ public class MainWindow {
 		tbdpnlContent.setBorder(null);
 		frmMainApp.getContentPane().add(tbdpnlContent, BorderLayout.CENTER);
 		tbdpnlContent.addTab("Análisis Técnico", technical); // Pestaña de análisis técnico con contenido Analysis
-		tbdpnlContent.addTab("Fundamentales", new FundamentalsAnalysisApp()); // Pestaña de fundamentales con contenido Fundamental
+		tbdpnlContent.addTab("Fundamentales", fundamental); // Pestaña de fundamentales con contenido Fundamental
 	
 		
 	}
-
-	private double buscarPrecio(String ticker) throws Exception {
-	    // Aquí haces la solicitud HTTP a la API de Alpha Vantage para obtener el precio del ticker
-
+	
+	private JSONObject getTickerData(String ticker, int type) throws Exception {
+		
+		//TIPOS: 0-Overview; 1-Income; 2-Balance
+		String functionType="";
+		if (type == 0) functionType ="OVERVIEW";
+		if (type == 1) functionType ="INCOME_STATEMENT";
+		if (type == 2) functionType ="BALANCE_SHEET";
+		
 	    // Ejemplo de cómo hacer la solicitud con Apache HttpClient
 	    CloseableHttpClient httpClient = HttpClients.createDefault();
-	    String apiKey = "PC2064VAMC8JGNU7";
-	    String url = "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + ticker + "&apikey=" + apiKey;
-
+	   
+	    String url = "https://www.alphavantage.co/query?function=" + functionType + "&symbol=" + ticker + "&apikey=" + apiKey;
+	   
 	    HttpGet httpGet = new HttpGet(url);
 	    HttpResponse response = httpClient.execute(httpGet);
 
@@ -133,13 +142,12 @@ public class MainWindow {
 
 	    // Parsear el JSON utilizando json-simple
 	    JSONParser parser = new JSONParser();
-	    JSONObject jsonObject = (JSONObject) parser.parse(jsonResponse);
-	    JSONObject globalQuote = (JSONObject) jsonObject.get("Global Quote");
-	    double precio = Double.parseDouble((String) globalQuote.get("05. price"));
+	    JSONObject data = (JSONObject) parser.parse(jsonResponse);
 
-	    return precio;
+	    return data;
 	}
-
+	
+	
 	public JFrame getFrame() {
 		// TODO Auto-generated method stub
 		return frmMainApp;
